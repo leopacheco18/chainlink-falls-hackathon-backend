@@ -106,7 +106,7 @@ app.get("/get-chats/:address", async function (req, res) {
       }
       data[i].image = product.image;
       data[i].name = product.name;
-      data[i].lastMsg = lastMsg.message || 'Empty chat';
+      data[i].lastMsg = lastMsg?.message || 'Empty chat';
       data[i].status = status;
     }
 
