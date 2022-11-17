@@ -11,6 +11,7 @@ const ChatsModel = require("./db/Models/Chat");
 const MessagesModel = require("./db/Models/Messages");
 
 const abi = require("./json/abiOpenMarket.json");
+const { default: mongoose } = require("mongoose");
 
 require("./db/db");
 require("dotenv").config();
@@ -93,6 +94,7 @@ app.get("/get-chats/:address", async function (req, res) {
     for (let i = 0; i < data.length; i++) {
       let product = await ProductModel.findOne({ tokenId: data[i].tokenId });
       let dataNFT = await contract.callStatic.NFTData(product.tokenId);
+      let lastMsg = await MessagesModel.findOne({chatId: mongoose.Types.ObjectId(data[i]._id)}).sort({date : 'desc'});
       let status = dataNFT[2];
       let price = dataNFT[0];
       price = ethers.utils.formatUnits(price, 18);
@@ -104,7 +106,7 @@ app.get("/get-chats/:address", async function (req, res) {
       }
       data[i].image = product.image;
       data[i].name = product.name;
-      data[i].lastMsg = "Hola mundo";
+      data[i].lastMsg = lastMsg.message || 'Empty chat';
       data[i].status = status;
     }
 
