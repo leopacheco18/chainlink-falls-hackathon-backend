@@ -268,6 +268,89 @@ app.get("/search/:search", async function (req, res) {
   }
 });
 
+
+app.get("/get-products-by-category/:category", async function (req, res) {
+  const { category } = req.params;
+  try {
+    const data = await ProductModel.find({
+      category
+    })
+      .sort({ tokenId: "desc" })
+      .lean();
+
+
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://rpc-mumbai.maticvigil.com/"
+    );
+
+    const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+
+    let maticPrice = await contract.callStatic.getMaticPrice();
+    maticPrice = ethers.utils.formatUnits(maticPrice, 8);
+
+    for (let i = 0; i < data.length; i++) {
+      let dataNFT = await contract.callStatic.NFTData(data[i].tokenId);
+      let price = dataNFT[0];
+      price = ethers.utils.formatUnits(price, 18);
+      let currency = dataNFT[3];
+      if (currency === "MATIC") {
+        data[i].priceMatic = price;
+        data[i].priceUSD = parseFloat(price) * parseFloat(maticPrice);
+      } else {
+        data[i].priceUSD = price;
+        data[i].priceMatic = parseFloat(price) * parseFloat(maticPrice);
+      }
+      data[i].status = dataNFT[2]
+    }
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Could not retreive products" });
+  }
+});
+
+
+
+app.get("/get-all-products", async function (req, res) {
+  try {
+    const data = await ProductModel.find()
+      .sort({ tokenId: "desc" })
+      .lean();
+
+
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://rpc-mumbai.maticvigil.com/"
+    );
+
+    const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+
+    let maticPrice = await contract.callStatic.getMaticPrice();
+    maticPrice = ethers.utils.formatUnits(maticPrice, 8);
+
+    for (let i = 0; i < data.length; i++) {
+      let dataNFT = await contract.callStatic.NFTData(data[i].tokenId);
+      let price = dataNFT[0];
+      price = ethers.utils.formatUnits(price, 18);
+      let currency = dataNFT[3];
+      if (currency === "MATIC") {
+        data[i].priceMatic = price;
+        data[i].priceUSD = parseFloat(price) * parseFloat(maticPrice);
+      } else {
+        data[i].priceUSD = price;
+        data[i].priceMatic = parseFloat(price) * parseFloat(maticPrice);
+      }
+      data[i].status = dataNFT[2]
+    }
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Could not retreive products" });
+  }
+});
+
+
 app.get("/get-lastest-products", async function (req, res) {
   try {
     const data = await ProductModel.find()
