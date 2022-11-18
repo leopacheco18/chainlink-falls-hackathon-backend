@@ -26,7 +26,7 @@ With Chainlink datafeeds the price of the product could be in Matic or USD. Also
 
 ## How to run
 
-**IMPORTANT:** For live testing be use to use Mumbai Network.
+**IMPORTANT:** Don't forget to create .env from .env.example
 
 1. Clone the repository.
 
