@@ -1,6 +1,6 @@
 # Chainlink-falls-hackathon-backend
 
-Backend built with with SLS framework for OpenMarket Project on Chainlink Falls Hackathon.
+Backend built with SLS framework for OpenMarket Project on Chainlink Falls Hackathon.
 
 [Live Demo Hosted in Fleek](https://open-market-chainlink-falls-hackathon.on.fleek.co/#/)
 
